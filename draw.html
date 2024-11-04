@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>下屆主辦人抽獎程式</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            background: #1a774a;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            color: #ffffff;
+        }
+        #container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #ffffff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            font-size: 36px;
+        }
+        #slot-machine {
+            width: 800px;
+            height: 150px;
+            margin: 20px auto;
+            background-color: #c41e3a;
+            border: 10px solid #eac038;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+        }
+        .reel {
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transition: top 1s cubic-bezier(0.25, 0.1, 0.25, 1);
+        }
+        .reel-item {
+            height: 50px;
+            line-height: 50px;
+            font-size: 20px;
+            text-align: center;
+            color: #ffffff;
+            background-color: #c41e3a;
+            border-bottom: 1px solid #d4af37;
+            display: flex;
+            justify-content: space-around;
+            transition: transform 0.5s ease, filter 0.5s ease;
+        }
+        .reel-item span {
+            flex: 1;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding: 0 5px;
+        }
+        .highlight {
+            font-size: 15 px;
+            transform: scale(1.05);
+            filter: none;
+        }
+        .dimmed {
+            font-size: 15px;
+            filter: blur(2px);
+            opacity: 0.6;
+        }
+        #result {
+            font-size: 34px;
+            margin: 10px 0;
+            min-height: 50px;
+            color: #f84765;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            font-weight: bold;
+        }
+        button {
+            font-size: 18px;
+            padding: 12px 24px;
+            cursor: pointer;
+            background: #d4af37;
+            color: #1a472a;
+            border: none;
+            border-radius: 25px;
+            margin: 10px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+            background: #f4c430;
+        }
+        #fileInput {
+            margin: 20px 0;
+        }
+        .christmas-light {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            animation: twinkle 1s infinite alternate;
+        }
+        @keyframes twinkle {
+            from { opacity: 0.5; }
+            to { opacity: 1; }
+        }
+        .snowflake {
+            color: #fff;
+            font-size: 1em;
+            font-family: Arial, sans-serif;
+            text-shadow: 0 0 5px #000;
+            position: fixed;
+            top: -10%;
+            z-index: 9999;
+            user-select: none;
+            cursor: default;
+            animation: fall 10s linear infinite;
+        }
+        @keyframes fall {
+            0% { transform: translateY(-10%) rotate(0deg); }
+            100% { transform: translateY(100vh) rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div style="height: 200px;"></div>
+    <div id="container">
+        <h1>🎄 下屆主辦人抽獎程式 🎄</h1>
+        <div id="slot-machine">
+            <div class="reel" id="reel"></div>
+        </div>
+        <input type="file" id="fileInput" accept=".xlsx, .xls, .csv">
+        <button onclick="loadParticipants()">載入參與者名單</button>
+        <button onclick="startDraw()">開始抽獎 🎁</button>
+        <div id="result"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+    <script>
+        let participants = [];
+        let reel = document.getElementById('reel');
+
+        function loadParticipants() {
+            const file = document.getElementById('fileInput').files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, {type: 'array'});
+                const sheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[sheetName];
+                participants = XLSX.utils.sheet_to_json(worksheet);
+                alert(`已載入 ${participants.length} 名參與者`);
+                initReel();
+                addChristmasLights();
+                createSnowflakes();
+            };
+
+            reader.readAsArrayBuffer(file);
+        }
+
+        function initReel() {
+            reel.innerHTML = '';
+            let extendedParticipants = [...participants, ...participants, ...participants];
+            extendedParticipants.forEach(participant => {
+                let item = document.createElement('div');
+                item.className = 'reel-item dimmed';
+                item.innerHTML = `
+                    <span>${participant.col1 || ''}</span>
+                    <span>${participant.col2 || ''}</span>
+                    <span>${participant.col3 || ''}</span>
+                    <span>${participant.col4 || ''}</span>
+                `;
+                reel.appendChild(item);
+            });
+        }
+
+        function startDraw() {
+            if (participants.length === 0) {
+                alert('請先載入參與者名單');
+                return;
+            }
+
+            let winner = participants[Math.floor(Math.random() * participants.length)];
+            let winnerIndex = Array.from(reel.children).findIndex(item => item.textContent.includes(winner.col1));
+            let reelHeight = reel.children[0].offsetHeight;
+            let scrollDistance = (winnerIndex - 1) * reelHeight; // 將中獎者放在中間
+
+            reel.style.top = `-${scrollDistance}px`;
+
+            setTimeout(() => {
+                reel.children[winnerIndex - 1].classList.add('dimmed'); // 上一個
+                reel.children[winnerIndex].classList.remove('dimmed'); // 中獎者
+                reel.children[winnerIndex].classList.add('highlight'); 
+                reel.children[winnerIndex + 1].classList.add('dimmed'); // 下一個
+                
+                document.getElementById('result').innerHTML = `🎉 恭喜中獎人  🎉：<br>${winner.col1} ${winner.col2} ${winner.col3} ${winner.col4}`;
+                createSnowflakes();
+            }, 1000);
+        }
+
+        function addChristmasLights() {
+            const colors = ['#ff5555', '#55ff55', '#5555ff', '#ffff55', '#ff55ff', '#55ffff'];
+            for (let i = 0; i < 50; i++) {
+                let light = document.createElement('div');
+                light.className = 'christmas-light';
+                light.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                light.style.left = Math.random() * window.innerWidth + 'px';
+                light.style.top = Math.random() * window.innerHeight + 'px';
+                light.style.animationDelay = Math.random() * 1 + 's';
+                light.style.zIndex = -1;
+                document.body.appendChild(light);
+            }
+        }
+
+        function createSnowflakes() {
+            const snowflakes = ['❄', '❅', '❆'];
+            for (let i = 0; i < 50; i++) {
+                let snowflake = document.createElement('div');
+                snowflake.className = 'snowflake';
+                snowflake.style.left = Math.random() * window.innerWidth + 'px';
+                snowflake.style.animationDuration = Math.random() * 5 + 7 + 's';
+                snowflake.style.opacity = Math.random();
+                snowflake.style.fontSize = Math.random() * 25 + 10 + 'px';
+                snowflake.innerHTML = snowflakes[Math.floor(Math.random() * snowflakes.length)];
+                snowflake.style.zIndex = -1;
+                document.body.appendChild(snowflake);
+                setTimeout(() => snowflake.remove(), 12000);
+            }
+        }
+
+        window.onload = function() {
+            addChristmasLights();
+            createSnowflakes();
+            setInterval(createSnowflakes, 1000);
+        };
+    </script>
+</body>
+</html>
