@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,16 +16,19 @@
             overflow-x: hidden;
             color: #ffffff;
         }
+
         #container {
             max-width: 1000px;
             margin: 0 auto;
             padding: 20px;
         }
+
         h1 {
             color: #ffffff;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
             font-size: 36px;
         }
+
         #slot-machine {
             width: 800px;
             height: 150px;
@@ -35,25 +39,28 @@
             position: relative;
             box-shadow: 0 0 20px rgb(255, 255, 255);
         }
+
         .reel {
             width: 100%;
             position: absolute;
             top: 0;
             left: 0;
-            transition: top 1s cubic-bezier(0.25, 0.1, 0.25, 1);
+            transition: top 5s cubic-bezier(0.25, 0.1, 0.25, 1);
         }
+
         .reel-item {
             height: 50px;
             line-height: 50px;
             font-size: 20px;
             text-align: center;
-            color: #ffffff;
+            color: #292929;
             background-color: #dcb9fa;
-            border-bottom: 1px solid #ffffff;
+            border-bottom: 1px solid #ba75f6;
             display: flex;
             justify-content: space-around;
             transition: transform 0.5s ease, filter 0.5s ease;
         }
+
         .reel-item span {
             flex: 1;
             text-align: center;
@@ -62,55 +69,69 @@
             text-overflow: ellipsis;
             padding: 0 5px;
         }
+
         .highlight {
             font-size: 15 px;
             transform: scale(1.05);
             filter: none;
         }
+
         .dimmed {
             font-size: 15px;
             filter: blur(2px);
             opacity: 0.6;
         }
+
         #result {
             font-size: 34px;
             margin: 10px 0;
             min-height: 50px;
             color: #fff;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
             font-weight: bold;
         }
+
         button {
             font-size: 18px;
             padding: 12px 24px;
             cursor: pointer;
             background: #fff;
-            color: #1a472a;
+            color: #000;
             border: none;
             border-radius: 25px;
             margin: 10px;
             transition: all 0.3s;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+
         button:hover {
             transform: translateY(-3px);
-            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
             background: #e2dcf1;
         }
+
         #fileInput {
             margin: 20px 0;
         }
+
         .christmas-light {
             position: absolute;
             width: 20px;
             height: 20px;
             border-radius: 50%;
-            animation: twinkle 1s infinite alternate;
+            animation: twinkle 5s infinite alternate;
         }
+
         @keyframes twinkle {
-            from { opacity: 0.5; }
-            to { opacity: 1; }
+            from {
+                opacity: 0.5;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
+
         .snowflake {
             color: #ffffff;
             font-size: 1em;
@@ -121,14 +142,21 @@
             z-index: 9999;
             user-select: none;
             cursor: default;
-            animation: fall 10s linear infinite;
+            animation: fall 5s linear infinite;
         }
+
         @keyframes fall {
-            0% { transform: translateY(-10%) rotate(0deg); }
-            100% { transform: translateY(100vh) rotate(360deg); }
+            0% {
+                transform: translateY(-10%) rotate(0deg);
+            }
+
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+            }
         }
     </style>
 </head>
+
 <body>
     <div style="height: 200px;"></div>
     <div id="container">
@@ -143,6 +171,7 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
     <script>
         let participants = [];
         let reel = document.getElementById('reel');
@@ -151,9 +180,9 @@
             const file = document.getElementById('fileInput').files[0];
             const reader = new FileReader();
 
-            reader.onload = function(e) {
+            reader.onload = function (e) {
                 const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, {type: 'array'});
+                const workbook = XLSX.read(data, { type: 'array' });
                 const sheetName = workbook.SheetNames[0];
                 const worksheet = workbook.Sheets[sheetName];
                 participants = XLSX.utils.sheet_to_json(worksheet);
@@ -194,16 +223,41 @@
             let scrollDistance = (winnerIndex - 1) * reelHeight; // 將中獎者放在中間
 
             reel.style.top = `-${scrollDistance}px`;
-
+            clearInterval(snowflakeInterval);
             setTimeout(() => {
                 reel.children[winnerIndex - 1].classList.add('dimmed'); // 上一個
                 reel.children[winnerIndex].classList.remove('dimmed'); // 中獎者
-                reel.children[winnerIndex].classList.add('highlight'); 
+                reel.children[winnerIndex].classList.add('highlight');
                 reel.children[winnerIndex + 1].classList.add('dimmed'); // 下一個
-                
+
                 document.getElementById('result').innerHTML = `🎉 恭喜中獎人  🎉：<br>${winner.col1} ${winner.col2} ${winner.col3} ${winner.col4}`;
                 createSnowflakes();
-            }, 1000);
+                showConfetti();
+            }, 5000);
+
+        }
+
+        function showConfetti() {
+            var duration = 15 * 1000;
+            var animationEnd = Date.now() + duration;
+            var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+            function randomInRange(min, max) {
+                return Math.random() * (max - min) + min;
+            }
+
+            var interval = setInterval(function () {
+                var timeLeft = animationEnd - Date.now();
+
+                if (timeLeft <= 0) {
+                    return clearInterval(interval);
+                }
+
+                var particleCount = 50 * (timeLeft / duration);
+                // since particles fall down, start a bit higher than random
+                confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
+                confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
+            }, 250);
         }
 
         function addChristmasLights() {
@@ -222,7 +276,7 @@
 
         function createSnowflakes() {
             const snowflakes = ['❄', '❅', '❆'];
-            for (let i = 0; i < 50; i++) {
+            for (let i = 0; i < 10; i++) {
                 let snowflake = document.createElement('div');
                 snowflake.className = 'snowflake';
                 snowflake.style.left = Math.random() * window.innerWidth + 'px';
@@ -236,11 +290,12 @@
             }
         }
 
-        window.onload = function() {
+        window.onload = function () {
             addChristmasLights();
             createSnowflakes();
-            setInterval(createSnowflakes, 1000);
+            snowflakeInterval = setInterval(createSnowflakes, 1000);
         };
     </script>
 </body>
+
 </html>
