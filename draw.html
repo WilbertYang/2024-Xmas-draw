@@ -8,7 +8,8 @@
         body {
             font-family: 'Arial', sans-serif;
             text-align: center;
-            background: #1a774a;
+            background: url('薔薇之戀-彩虹.png') no-repeat center center fixed;
+            background-size: cover;
             margin: 0;
             padding: 0;
             overflow-x: hidden;
@@ -28,12 +29,11 @@
             width: 800px;
             height: 150px;
             margin: 20px auto;
-            background-color: #c41e3a;
-            border: 10px solid #eac038;
+            background-color: #ac99da;
             border-radius: 15px;
             overflow: hidden;
             position: relative;
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+            box-shadow: 0 0 20px rgb(255, 255, 255);
         }
         .reel {
             width: 100%;
@@ -48,8 +48,8 @@
             font-size: 20px;
             text-align: center;
             color: #ffffff;
-            background-color: #c41e3a;
-            border-bottom: 1px solid #d4af37;
+            background-color: #dcb9fa;
+            border-bottom: 1px solid #ffffff;
             display: flex;
             justify-content: space-around;
             transition: transform 0.5s ease, filter 0.5s ease;
@@ -76,7 +76,7 @@
             font-size: 34px;
             margin: 10px 0;
             min-height: 50px;
-            color: #f84765;
+            color: #fff;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
             font-weight: bold;
         }
@@ -84,7 +84,7 @@
             font-size: 18px;
             padding: 12px 24px;
             cursor: pointer;
-            background: #d4af37;
+            background: #fff;
             color: #1a472a;
             border: none;
             border-radius: 25px;
@@ -95,7 +95,7 @@
         button:hover {
             transform: translateY(-3px);
             box-shadow: 0 6px 8px rgba(0,0,0,0.15);
-            background: #f4c430;
+            background: #e2dcf1;
         }
         #fileInput {
             margin: 20px 0;
@@ -112,7 +112,7 @@
             to { opacity: 1; }
         }
         .snowflake {
-            color: #fff;
+            color: #ffffff;
             font-size: 1em;
             font-family: Arial, sans-serif;
             text-shadow: 0 0 5px #000;
@@ -208,7 +208,7 @@
 
         function addChristmasLights() {
             const colors = ['#ff5555', '#55ff55', '#5555ff', '#ffff55', '#ff55ff', '#55ffff'];
-            for (let i = 0; i < 50; i++) {
+            for (let i = 0; i < 0; i++) {
                 let light = document.createElement('div');
                 light.className = 'christmas-light';
                 light.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
