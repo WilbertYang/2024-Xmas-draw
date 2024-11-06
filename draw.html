@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>下屆主辦人抽獎程式</title>
+    <title>Next Organizer Lottery Program</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -160,13 +160,13 @@
 <body>
     <div style="height: 200px;"></div>
     <div id="container">
-        <h1>🎄 下屆主辦人抽獎程式 🎄</h1>
+        <h1>🎄 Next Organizer Lottery Program 🎄</h1>
         <div id="slot-machine">
             <div class="reel" id="reel"></div>
         </div>
         <input type="file" id="fileInput" accept=".xlsx, .xls, .csv">
-        <button onclick="loadParticipants()">載入參與者名單</button>
-        <button onclick="startDraw()">開始抽獎 🎁</button>
+        <button onclick="loadParticipants()">Load Participants</button>
+        <button onclick="startDraw()">Start Draw 🎁</button>
         <div id="result"></div>
     </div>
 
@@ -186,7 +186,7 @@
                 const sheetName = workbook.SheetNames[0];
                 const worksheet = workbook.Sheets[sheetName];
                 participants = XLSX.utils.sheet_to_json(worksheet);
-                alert(`已載入 ${participants.length} 名參與者`);
+                alert(`Loaded ${participants.length} participants`);
                 initReel();
                 addChristmasLights();
                 createSnowflakes();
@@ -213,24 +213,24 @@
 
         function startDraw() {
             if (participants.length === 0) {
-                alert('請先載入參與者名單');
+                alert('Please load the participants list first');
                 return;
             }
 
             let winner = participants[Math.floor(Math.random() * participants.length)];
             let winnerIndex = Array.from(reel.children).findIndex(item => item.textContent.includes(winner.col1));
             let reelHeight = reel.children[0].offsetHeight;
-            let scrollDistance = (winnerIndex - 1) * reelHeight; // 將中獎者放在中間
+            let scrollDistance = (winnerIndex - 1) * reelHeight; // Place the winner in the middle
 
             reel.style.top = `-${scrollDistance}px`;
             clearInterval(snowflakeInterval);
             setTimeout(() => {
-                reel.children[winnerIndex - 1].classList.add('dimmed'); // 上一個
-                reel.children[winnerIndex].classList.remove('dimmed'); // 中獎者
+                reel.children[winnerIndex - 1].classList.add('dimmed'); // Previous
+                reel.children[winnerIndex].classList.remove('dimmed'); // Winner
                 reel.children[winnerIndex].classList.add('highlight');
-                reel.children[winnerIndex + 1].classList.add('dimmed'); // 下一個
+                reel.children[winnerIndex + 1].classList.add('dimmed'); // Next
 
-                document.getElementById('result').innerHTML = `🎉 恭喜中獎人  🎉：<br>${winner.col1} ${winner.col2} ${winner.col3} ${winner.col4}`;
+                document.getElementById('result').innerHTML = `🎉 Congratulations to the winner 🎉:<br>${winner.col1} ${winner.col2} ${winner.col3} ${winner.col4}`;
                 createSnowflakes();
                 showConfetti();
             }, 5000);
