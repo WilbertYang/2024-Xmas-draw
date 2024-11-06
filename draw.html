@@ -45,7 +45,7 @@
             position: absolute;
             top: 0;
             left: 0;
-            transition: top 5s cubic-bezier(0.25, 0.1, 0.25, 1);
+            transition: top 6.5s cubic-bezier(0.25, 0.1, 0.25, 1);
         }
 
         .reel-item {
@@ -142,7 +142,7 @@
             z-index: 9999;
             user-select: none;
             cursor: default;
-            animation: fall 5s linear infinite;
+            animation: fall 6.5s linear infinite;
         }
 
         @keyframes fall {
@@ -169,12 +169,14 @@
         <button onclick="startDraw()">Start Draw 🎁</button>
         <div id="result"></div>
     </div>
+    <audio id="winSound" src="抽獎中+中獎.mp3"></audio>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
     <script>
         let participants = [];
         let reel = document.getElementById('reel');
+        let winSound = document.getElementById('winSound');
 
         function loadParticipants() {
             const file = document.getElementById('fileInput').files[0];
@@ -224,6 +226,7 @@
 
             reel.style.top = `-${scrollDistance}px`;
             clearInterval(snowflakeInterval);
+            winSound.play();
             setTimeout(() => {
                 reel.children[winnerIndex - 1].classList.add('dimmed'); // Previous
                 reel.children[winnerIndex].classList.remove('dimmed'); // Winner
@@ -233,7 +236,7 @@
                 document.getElementById('result').innerHTML = `🎉 Congratulations to the winner 🎉:<br>${winner.col1} ${winner.col2} ${winner.col3} ${winner.col4}`;
                 createSnowflakes();
                 showConfetti();
-            }, 5000);
+            }, 6500);
 
         }
 
