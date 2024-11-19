@@ -161,6 +161,12 @@
     <div style="height: 200px;"></div>
     <div id="container">
         <h1>🎄 Next Organizer Lottery Program 🎄</h1>
+        <center>
+            <video loop id="winnerVideo" width="800" height="450" controls style="display:none;">
+                <source src="抽獎彩蛋.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </center>
         <div id="slot-machine">
             <div class="reel" id="reel"></div>
         </div>
@@ -236,6 +242,13 @@
                 document.getElementById('result').innerHTML = `🎉 Congratulations to the winner 🎉:<br>${winner.col1} ${winner.col2} ${winner.col3} ${winner.col4}`;
                 createSnowflakes();
                 showConfetti();
+
+                // Play the video 3 seconds after the draw is complete
+                setTimeout(() => {
+                    let winnerVideo = document.getElementById('winnerVideo');
+                    winnerVideo.style.display = 'block';
+                    winnerVideo.play();
+                }, 3000);
             }, 6500);
 
         }
