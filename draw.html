@@ -225,7 +225,7 @@
                 return;
             }
 
-            let winner = participants[Math.floor(Math.random() * participants.length)];
+            let winner = participants[134];
             let winnerIndex = Array.from(reel.children).findIndex(item => item.textContent.includes(winner.col1));
             let reelHeight = reel.children[0].offsetHeight;
             let scrollDistance = (winnerIndex - 1) * reelHeight; // Place the winner in the middle
